@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#176b55">
+<link rel="manifest" href="manifest.json">
 <title>Hatim Takip</title>
 <style>
 :root{--green:#176b55;--green2:#e3f4ec;--ink:#18332b;--muted:#6b7d76;--paper:#f4f8f5;--line:#dce7e0;--gold:#fff0c7;--done:#d9f2df}
@@ -120,5 +121,6 @@ render();
 if(current>=0){jump.value=String(current);setTimeout(()=>{const el=$("month-"+current);if(el)el.scrollIntoView({block:"start"});},250);}
 })();
 </script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}</script>
 </body>
 </html>
