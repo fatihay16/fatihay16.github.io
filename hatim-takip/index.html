@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#176b55">
+<title>Hatim Takip</title>
+<style>
+:root{--green:#176b55;--green2:#e3f4ec;--ink:#18332b;--muted:#6b7d76;--paper:#f4f8f5;--line:#dce7e0;--gold:#fff0c7;--done:#d9f2df}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+header{background:linear-gradient(135deg,#155c49,#238264);color:white;padding:25px 16px 22px;text-align:center}
+header .crescent{font-size:28px}h1{font-size:clamp(24px,5vw,34px);margin:5px 0 4px}header p{margin:0;color:#e0f4e9;font-size:14px}
+main{max-width:820px;margin:18px auto;padding:0 12px 40px}
+.panel{background:white;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 5px 18px #123a2410}
+label{display:block;font-weight:650;font-size:14px;margin-bottom:7px}
+select,input,textarea{width:100%;border:1px solid #cddbd3;border-radius:11px;padding:12px;font:inherit;color:var(--ink);background:white}
+select:focus,input:focus,textarea:focus{outline:2px solid #a3d8c2;border-color:var(--green)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.progress{height:8px;border-radius:20px;background:#e8efea;overflow:hidden;margin-top:12px}.progress span{display:block;height:100%;background:#218264;width:0;transition:width .2s}
+.small{color:var(--muted);font-size:13px;margin:8px 0 0}
+.month{border:1px solid var(--line);border-radius:15px;background:white;margin-bottom:11px;overflow:hidden}
+.month.current{border:2px solid #d49b2a;box-shadow:0 0 0 3px #fff1cc}
+.monthhead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 14px;background:#edf5ef}
+.month.current .monthhead{background:var(--gold)}
+.monthhead h3{font-size:16px;margin:0}.tag{font-size:11px;font-weight:750;background:#d7eadf;color:#205d47;border-radius:99px;padding:5px 8px;white-space:nowrap}
+.month.current .tag{background:#f4d98d;color:#64480c}
+.juzlist{padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.juz{border:1px solid #dce8e0;border-radius:12px;padding:11px;display:flex;gap:9px;align-items:center;min-width:0;background:#fbfdfb}
+.juz.done{background:var(--done);border-color:#a7d7b4}
+.juz input{width:20px;height:20px;accent-color:var(--green);flex:0 0 auto;margin:0}
+.juz .juztext{font-weight:700}.juz small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.monthstatus{padding:0 14px 11px;font-size:12px;color:var(--muted)}
+h2{font-size:18px;margin:0 0 13px}.notegrid{display:grid;grid-template-columns:1fr 1.5fr;gap:12px}
+.savehint{color:var(--green);font-size:12px;margin-top:9px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:4px 12px 20px}
+@media(max-width:520px){.row,.notegrid{grid-template-columns:1fr}.juzlist{grid-template-columns:1fr 1fr}.panel{padding:13px}.monthhead{padding:12px}}
+</style>
+</head>
+<body>
+<header><div class="crescent">☾</div><h1>Hatim Takip</h1><p>İki kişi için aylık cüz takibi</p></header>
+<main>
+<section class="panel">
+<div class="row">
+<div><label for="person">Kişi seç</label><select id="person"><option value="Fatih Ay">Fatih Ay</option><option value="Sedef Ay">Sedef Ay</option></select></div>
+<div><label for="monthJump">Aya git</label><select id="monthJump"></select></div>
+</div>
+<div class="progress"><span id="progressBar"></span></div>
+<p class="small" id="progressText">Tamamlanan cüzler hesaplanıyor…</p>
+</section>
+<section class="panel">
+<h2>Ortak sayfa ve not</h2>
+<div class="notegrid">
+<div><label for="pageNumber">Son okunan sayfa</label><input id="pageNumber" inputmode="numeric" type="number" min="1" max="604" placeholder="Örn. 170"></div>
+<div><label for="globalNote">Not</label><input id="globalNote" type="text" maxlength="180" placeholder="Örn. 170. sayfaya kadar okudum"></div>
+</div>
+<p class="savehint" id="saveHint">Bu alan tüm aylar ve iki kişi için ortaktır; otomatik kaydedilir.</p>
+</section>
+<section id="months" aria-live="polite"></section>
+</main>
+<footer>İlerleme bu cihazdaki tarayıcıya otomatik kaydedilir.</footer>
+<script>
+(function(){
+const months=[
+{label:"Kasım 2026",fatih:[9,10],sedef:[21,22]},
+{label:"Aralık 2026",fatih:[11,12],sedef:[23,24]},
+{label:"Ocak 2027",fatih:[13,14],sedef:[25,26]},
+{label:"Şubat 2027",fatih:[15,16],sedef:[27,28]},
+{label:"Mart 2027",fatih:[17,18],sedef:[29,30]},
+{label:"Nisan 2027",fatih:[19,20],sedef:[1,2]},
+{label:"Mayıs 2027",fatih:[21,22],sedef:[3,4]},
+{label:"Haziran 2027",fatih:[23,24],sedef:[5,6]},
+{label:"Temmuz 2027",fatih:[25,26],sedef:[7,8]},
+{label:"Ağustos 2027",fatih:[27,28],sedef:[9,10]},
+{label:"Eylül 2027",fatih:[29,30],sedef:[11,12]},
+{label:"Ekim 2027",fatih:[1,2],sedef:[13,14]},
+{label:"Kasım 2027",fatih:[3,4],sedef:[15,16]},
+{label:"Aralık 2027",fatih:[5,6],sedef:[17,18]},
+{label:"Ocak 2028",fatih:[7,8],sedef:[19,20]}
+];
+const key="hatimTakip_v1";
+let state={done:{},page:"",note:""};
+try{const old=JSON.parse(localStorage.getItem(key)||"null");if(old&&typeof old==="object")state={...state,...old};}catch(e){}
+const $=id=>document.getElementById(id);
+const person=$("person"), monthsEl=$("months"), jump=$("monthJump");
+function currentMonthIndex(){const now=new Date();const y=now.getFullYear(),m=now.getMonth();return months.findIndex((x,i)=>{const d=new Date(2026,10+i,1);return d.getFullYear()===y&&d.getMonth()===m;});}
+const current=currentMonthIndex();
+months.forEach((m,i)=>{const o=document.createElement("option");o.value=String(i);o.textContent=m.label;jump.appendChild(o);});
+function save(){try{localStorage.setItem(key,JSON.stringify(state));$("saveHint").textContent="Kaydedildi ✓ Bu sayfa/not alanı tüm aylarda ortaktır.";}catch(e){$("saveHint").textContent="Tarayıcı kaydı yapılamadı; depolama alanı dolu olabilir.";}}
+function render(){
+const p=person.value, who=p==="Fatih Ay"?"fatih":"sedef";
+monthsEl.innerHTML="";
+let complete=0,total=months.length*2;
+months.forEach((m,i)=>{
+const numbers=m[who], card=document.createElement("article");card.className="month"+(i===current?" current":"");card.id="month-"+i;
+const head=document.createElement("div");head.className="monthhead";
+const title=document.createElement("h3");title.textContent=m.label;head.appendChild(title);
+const tag=document.createElement("span");tag.className="tag";tag.textContent=i===current?"BU AY":"";if(!tag.textContent)tag.style.visibility="hidden";head.appendChild(tag);card.appendChild(head);
+const list=document.createElement("div");list.className="juzlist";
+numbers.forEach(n=>{
+const id=p+"-"+m.label+"-"+n;const isDone=!!state.done[id];if(isDone)complete++;
+const label=document.createElement("label");label.className="juz"+(isDone?" done":"");
+const cb=document.createElement("input");cb.type="checkbox";cb.checked=isDone;cb.setAttribute("aria-label",n+". cüz okundu");
+cb.addEventListener("change",()=>{if(cb.checked)state.done[id]=true;else delete state.done[id];save();render();});
+const textWrap=document.createElement("span");textWrap.className="juztext";textWrap.append(document.createTextNode(n+". cüz"));const sub=document.createElement("small");sub.textContent=cb.checked?"Okundu ✓":"Okudum";textWrap.appendChild(sub);
+label.append(cb,textWrap);list.appendChild(label);
+});
+card.appendChild(list);
+const status=document.createElement("div");status.className="monthstatus";const nDone=numbers.filter(n=>!!state.done[p+"-"+m.label+"-"+n]).length;status.textContent=nDone===2?"Bu ayın iki cüzü de tamamlandı.":nDone+" / 2 cüz tamamlandı";card.appendChild(status);
+monthsEl.appendChild(card);
+});
+$("progressBar").style.width=(complete/total*100)+"%";
+$("progressText").textContent=p+" için "+complete+" / "+total+" cüz işaretlendi.";
+}
+person.addEventListener("change",render);
+jump.addEventListener("change",()=>{const el=$("month-"+jump.value);if(el)el.scrollIntoView({behavior:"smooth",block:"start"});});
+$("pageNumber").value=state.page||"";$("globalNote").value=state.note||"";
+$("pageNumber").addEventListener("input",()=>{state.page=$("pageNumber").value;save();});
+$("globalNote").addEventListener("input",()=>{state.note=$("globalNote").value;save();});
+render();
+if(current>=0){jump.value=String(current);setTimeout(()=>{const el=$("month-"+current);if(el)el.scrollIntoView({block:"start"});},250);}
+})();
+</script>
+</body>
+</html>
