@@ -102,7 +102,7 @@ const id=p+"-"+m.label+"-"+n;const isDone=!!state.done[id];if(isDone)complete++;
 const label=document.createElement("label");label.className="juz"+(isDone?" done":"");
 const cb=document.createElement("input");cb.type="checkbox";cb.checked=isDone;cb.setAttribute("aria-label",n+". cüz okundu");
 cb.addEventListener("change",()=>{if(cb.checked)state.done[id]=true;else delete state.done[id];save();render();});
-const textWrap=document.createElement("span");textWrap.className="juztext";textWrap.append(document.createTextNode(n+". cüz"));const sub=document.createElement("small");sub.textContent=cb.checked?"Okundu ✓":"Okudum";textWrap.appendChild(sub);
+const textWrap=document.createElement("span");textWrap.className="juztext";textWrap.append(document.createTextNode(n+". cüz"));const sub=document.createElement("small");sub.textContent="Sayfa "+((n-1)*20+1)+"–"+(n===30?604:n*20)+" · "+(cb.checked?"Okundu ✓":"Okudum");textWrap.appendChild(sub);
 label.append(cb,textWrap);list.appendChild(label);
 });
 card.appendChild(list);
