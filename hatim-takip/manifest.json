@@ -1,0 +1,11 @@
+{
+  "name": "Hatim Takip",
+  "short_name": "Hatim Takip",
+  "lang": "tr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f8f5",
+  "theme_color": "#176b55",
+  "description": "İki kişi için aylık cüz ve hatim takibi"
+}
