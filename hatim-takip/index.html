@@ -83,6 +83,7 @@ let state={done:{},page:"",note:""};
 try{const old=JSON.parse(localStorage.getItem(key)||"null");if(old&&typeof old==="object")state={...state,...old};}catch(e){}
 const $=id=>document.getElementById(id);
 const person=$("person"), monthsEl=$("months"), jump=$("monthJump");
+if(state.person==="Fatih Ay"||state.person==="Sedef Ay")person.value=state.person;
 function currentMonthIndex(){const now=new Date();const y=now.getFullYear(),m=now.getMonth();const found=months.findIndex((x,i)=>{const d=new Date(2026,10+i,1);return d.getFullYear()===y&&d.getMonth()===m;});if(found>=0)return found;return new Date(y,m,1)<new Date(2026,10,1)?0:months.length-1;}
 const current=currentMonthIndex();
 months.forEach((m,i)=>{const o=document.createElement("option");o.value=String(i);o.textContent=m.label;jump.appendChild(o);});
@@ -112,7 +113,7 @@ monthsEl.appendChild(card);
 $("progressBar").style.width=(complete/total*100)+"%";
 $("progressText").textContent=p+" için "+complete+" / "+total+" cüz işaretlendi.";
 }
-person.addEventListener("change",render);
+person.addEventListener("change",()=>{state.person=person.value;save();render();});
 jump.addEventListener("change",()=>{const el=$("month-"+jump.value);if(el)el.scrollIntoView({behavior:"smooth",block:"start"});});
 $("pageNumber").value=state.page||"";$("globalNote").value=state.note||"";
 $("pageNumber").addEventListener("input",()=>{state.page=$("pageNumber").value;save();});
