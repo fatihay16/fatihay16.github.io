@@ -83,7 +83,7 @@ let state={done:{},page:"",note:""};
 try{const old=JSON.parse(localStorage.getItem(key)||"null");if(old&&typeof old==="object")state={...state,...old};}catch(e){}
 const $=id=>document.getElementById(id);
 const person=$("person"), monthsEl=$("months"), jump=$("monthJump");
-function currentMonthIndex(){const now=new Date();const y=now.getFullYear(),m=now.getMonth();return months.findIndex((x,i)=>{const d=new Date(2026,10+i,1);return d.getFullYear()===y&&d.getMonth()===m;});}
+function currentMonthIndex(){const now=new Date();const y=now.getFullYear(),m=now.getMonth();const found=months.findIndex((x,i)=>{const d=new Date(2026,10+i,1);return d.getFullYear()===y&&d.getMonth()===m;});if(found>=0)return found;return new Date(y,m,1)<new Date(2026,10,1)?0:months.length-1;}
 const current=currentMonthIndex();
 months.forEach((m,i)=>{const o=document.createElement("option");o.value=String(i);o.textContent=m.label;jump.appendChild(o);});
 function save(){try{localStorage.setItem(key,JSON.stringify(state));$("saveHint").textContent="Kaydedildi ✓ Bu sayfa/not alanı tüm aylarda ortaktır.";}catch(e){$("saveHint").textContent="Tarayıcı kaydı yapılamadı; depolama alanı dolu olabilir.";}}
@@ -95,7 +95,7 @@ months.forEach((m,i)=>{
 const numbers=m[who], card=document.createElement("article");card.className="month"+(i===current?" current":"");card.id="month-"+i;
 const head=document.createElement("div");head.className="monthhead";
 const title=document.createElement("h3");title.textContent=m.label;head.appendChild(title);
-const tag=document.createElement("span");tag.className="tag";tag.textContent=i===current?"BU AY":"";if(!tag.textContent)tag.style.visibility="hidden";head.appendChild(tag);card.appendChild(head);
+const tag=document.createElement("span");tag.className="tag";tag.textContent=i===current?"AKTİF AY":"";if(!tag.textContent)tag.style.visibility="hidden";head.appendChild(tag);card.appendChild(head);
 const list=document.createElement("div");list.className="juzlist";
 numbers.forEach(n=>{
 const id=p+"-"+m.label+"-"+n;const isDone=!!state.done[id];if(isDone)complete++;
